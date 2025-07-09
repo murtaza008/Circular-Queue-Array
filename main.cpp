@@ -3,105 +3,116 @@ using namespace std;
 
 class CircularQueue {
 private:
-    int* arr;      // Array to store queue elements
-    int front;     // Points to the front element
-    int rear;      // Points to the last element
-    int maxSize;   // Maximum capacity of the queue
-    int size;      // Current number of elements in the queue
+    int* arr;
+    int front, rear;
+    int size;
 
 public:
-    // Constructor to initialize the queue
-    CircularQueue(int capacity) {
-        maxSize = capacity;
-        arr = new int[maxSize];
-        front = -1; // Indicates the queue is initially empty
+    // Constructor
+    CircularQueue(int s) {
+        size = s;
+        arr = new int[size];
+        front = -1;
         rear = -1;
-        size = 0;
     }
 
-    // Destructor to free memory
-    ~CircularQueue() {
-        delete[] arr;
+    // Check if queue is empty
+    bool isEmpty() {
+        return front == -1;
     }
 
-    // Enqueue operation: Add an element to the rear of the queue
+    // Check if queue is full
+    bool isFull() {
+        return (rear + 1) % size == front;
+    }
+
+    // Enqueue operation
     void enqueue(int value) {
         if (isFull()) {
-            cout << "Queue Overflow! Cannot enqueue " << value << endl;
+            cout << "Queue Overflow!" << endl;
             return;
         }
 
-        // If the queue is empty, set front and rear to 0
         if (isEmpty()) {
             front = rear = 0;
         } else {
-            rear = (rear + 1) % maxSize; // Move rear circularly
+            rear = (rear + 1) % size;
         }
 
         arr[rear] = value;
-        size++;
-        cout << value << " enqueued to queue." << endl;
+        cout << value << " enqueued." << endl;
     }
 
-    // Dequeue operation: Remove the front element from the queue
-    int dequeue() {
+    // Dequeue operation
+    void dequeue() {
         if (isEmpty()) {
-            cout << "Queue Underflow! Cannot dequeue." << endl;
-            return -1; // Return a sentinel value
+            cout << "Queue Underflow!" << endl;
+            return;
         }
 
-        int dequeuedValue = arr[front];
+        cout << "Dequeued: " << arr[front] << endl;
 
-        // If the queue has only one element, reset front and rear
         if (front == rear) {
-            front = rear = -1; // Reset the queue to empty state
+            // Only one element
+            front = rear = -1;
         } else {
-            front = (front + 1) % maxSize; // Move front circularly
+            front = (front + 1) % size;
         }
-
-        size--;
-        return dequeuedValue;
     }
 
-    // Peek operation: Get the front element without removing it
-    int peek() {
-        if (isEmpty()) {
-            cout << "Queue is empty! No element to peek." << endl;
-            return -1; // Return a sentinel value
-        }
-        return arr[front];
-    }
-
-    // Check if the queue is empty
-    bool isEmpty() {
-        return (front == -1);
-    }
-
-    // Check if the queue is full
-    bool isFull() {
-        return (size == maxSize);
-    }
-
-    // Display all elements in the queue
-    void display() {
+    // Peek front element
+    void peek() {
         if (isEmpty()) {
             cout << "Queue is empty!" << endl;
         } else {
-            cout << "Queue elements: ";
-            for (int i = 0; i < size; i++) {
-                cout << arr[(front + i) % maxSize] << " ";
-            }
-            cout << endl;
+            cout << "Front element: " << arr[front] << endl;
         }
+    }
+
+    // Display queue elements
+    void display() {
+        if (isEmpty()) {
+            cout << "Queue is empty!" << endl;
+            return;
+        }
+
+        cout << "Queue elements: ";
+        int i = front;
+        while (true) {
+            cout << arr[i] << " ";
+            if (i == rear)
+                break;
+            i = (i + 1) % size;
+        }
+        cout << endl;
+    }
+
+    // Destructor
+    ~CircularQueue() {
+        delete[] arr;
     }
 };
 
+// Main function to test
 int main() {
-    int capacity;
-    cout << "Enter the size of the circular queue: ";
-    cin >> capacity;
+    CircularQueue q(5);
 
-    CircularQueue queue(capacity);
+    q.enqueue(10);
+    q.enqueue(20);
+    q.enqueue(30);
+    q.enqueue(40);
+    q.enqueue(50); // Full here
+    q.display();
+
+    q.dequeue();
+    q.dequeue();
+    q.display();
+
+    q.enqueue(60);
+    q.enqueue(70); // Wrap-around
+    q.display();
+
+    q.peek();
 
     return 0;
 }
